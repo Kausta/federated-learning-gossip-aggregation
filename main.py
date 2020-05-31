@@ -10,6 +10,7 @@ from tensorboardX import SummaryWriter
 from torchsummary import summary
 
 from CifarCNN import CifarCNN
+from GossipAggregator import GossipAggregator
 
 
 def main():
@@ -52,12 +53,24 @@ def main():
     writer = SummaryWriter(log_dir=run_dir)
 
     model = CifarCNN()
+    gossip = GossipAggregator(data_points=len(train_set), decay_rate=0.99)
     summary(model, (3, 32, 32))
     epochs = args.epochs
     optimizer = optim.Adam(
         model.parameters(), 0.001, betas=(0.9, 0.999))
+
     for epoch in range(epochs):
+        print("Training epoch:", epoch)
         model.train_epoch(train_loader, args, epoch, optimizer, writer)
+        print("Evaluating epoch:", epoch)
+        model.eval_epoch(test_loader, args, writer)
+        flattened = model.flatten()
+        print("Pushing updates:", epoch)
+        gossip.push_model(flattened)
+        print("Receiving updates:", epoch)
+        flattened = gossip.receive_updates(flattened)
+        model.unflatten(flattened)
+        print("Evaluating post receive:", epoch)
         model.eval_epoch(test_loader, args, writer)
 
 

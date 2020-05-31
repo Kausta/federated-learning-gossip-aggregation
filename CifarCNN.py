@@ -1,8 +1,24 @@
 import torch
 import torch.nn as nn
 import time
-
+import numpy as np
 from helper import AverageMeter
+
+
+def unflatten_block(block, index, weights):
+    block_state_dict = block.state_dict()
+    for key, value in block_state_dict.items():
+        param = value.detach().numpy()
+        size = param.shape
+        param = param.flatten()
+        num_elements = len(param)
+        weight = weights[index:index + num_elements]
+        index += num_elements
+        np_arr = np.array(weight).reshape(size)
+        block_state_dict[key] = torch.tensor(np_arr)
+
+    block.load_state_dict(block_state_dict)
+    return index
 
 
 class CifarCNN(torch.nn.Module):
@@ -88,7 +104,7 @@ class CifarCNN(torch.nn.Module):
         step = 0 * len(loader)
 
         total = 0
-        correct = 90
+        correct = 0
 
         with torch.no_grad():
             end = time.time()
@@ -117,3 +133,16 @@ class CifarCNN(torch.nn.Module):
                             .format(i, len(loader), batch_time=batch_time, loss=losses), flush=True)
 
         print('Accuracy of the network on the test images: {accuracy:.4f}%'.format(accuracy=100 * correct / total))
+
+    def flatten(self):
+        all_params = np.array([])
+
+        for key, value in self.layer.state_dict().items():
+            param = value.detach().numpy().flatten()
+            all_params = np.append(all_params, param)
+
+        return all_params
+
+    def unflatten(self, weights):
+        index = 0
+        index = unflatten_block(self.layer, index, weights)
