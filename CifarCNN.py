@@ -25,32 +25,38 @@ class CifarCNN(torch.nn.Module):
     def __init__(self):
         super(CifarCNN, self).__init__()
         self.layer = nn.Sequential(
-            nn.Conv2d(3, 16, kernel_size=3, padding=1, stride=1),
+            nn.Conv2d(3, 32, kernel_size=3, padding=1, stride=1),
             nn.ReLU(),
-            nn.Conv2d(16, 16, kernel_size=3, padding=1, stride=1),
-            nn.ReLU(),
-            nn.MaxPool2d(2),
-            nn.BatchNorm2d(16),
-            nn.Dropout(0.2),
-            nn.Conv2d(16, 32, kernel_size=3, padding=1, stride=1),
-            nn.ReLU(),
+            nn.BatchNorm2d(32),
             nn.Conv2d(32, 32, kernel_size=3, padding=1, stride=1),
             nn.ReLU(),
+            nn.BatchNorm2d(32),
+            nn.Conv2d(32, 32, kernel_size=3, padding=1, stride=1),
+            nn.ReLU(),
+            nn.BatchNorm2d(32),
             nn.MaxPool2d(2),
             nn.Dropout(0.2),
-            nn.BatchNorm2d(32),
+
             nn.Conv2d(32, 64, kernel_size=3, padding=1, stride=1),
             nn.ReLU(),
+            nn.BatchNorm2d(64),
             nn.Conv2d(64, 64, kernel_size=3, padding=1, stride=1),
             nn.ReLU(),
-            nn.MaxPool2d(2),
-            nn.Dropout(0.2),
             nn.BatchNorm2d(64),
-            nn.Flatten(),
-            nn.Linear(1024, 128),
+            nn.MaxPool2d(2),
+            nn.Dropout(0.3),
+
+            nn.Conv2d(64, 128, kernel_size=3, padding=1, stride=1),
             nn.ReLU(),
-            nn.Dropout(0.2),
-            nn.Linear(128, 10),
+            nn.BatchNorm2d(128),
+            nn.Conv2d(128, 128, kernel_size=3, padding=1, stride=1),
+            nn.ReLU(),
+            nn.BatchNorm2d(128),
+            nn.MaxPool2d(2),
+            nn.Dropout(0.4),
+
+            nn.Flatten(),
+            nn.Linear(2048, 10),
             nn.LogSoftmax(dim=1)
         )
 

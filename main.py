@@ -57,7 +57,7 @@ def main():
     summary(model, (3, 32, 32))
     epochs = args.epochs
     optimizer = optim.Adam(
-        model.parameters(), 0.001, betas=(0.9, 0.999))
+        model.parameters(), 0.001, betas=(0.9, 0.999), weight_decay=1e-4)
 
     for epoch in range(epochs):
         print("Training epoch:", epoch)
