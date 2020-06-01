@@ -24,11 +24,3 @@ message Models {
 message Reply {
   string result = 1;
 }
-
-message HelloRequest {
-  string name = 1;
-}
-
-message HelloReply {
-  string message = 1;
-}
