@@ -71,25 +71,20 @@ def main():
     run_dir = os.path.join("./", "runs", args.id)
     writer = SummaryWriter(log_dir=run_dir)
 
-    if not args.gossip:
-        model = CifarCNN(device)
-        summary(model, (3, 32, 32))
-        optimizer = optim.AdamW(model.parameters(), 0.001, betas=(0.9, 0.999), weight_decay=1e-2, amsgrad=True)
-        for epoch in range(100):
-            print("Training epoch:", epoch)
-            model.train_epoch(train_loader, args, epoch, optimizer, writer)
-            print("Evaluating epoch:", epoch)
-            model.eval_epoch(test_loader, args, writer)
-    else:
-        model = CifarCNN(device)
+    model = CifarCNN(device)
+    summary(model, (3, 32, 32))
+    if args.gossip:
         gossip = GossipAggregator(data_points=len(train_set), decay_rate=0.99)
-        summary(model, (3, 32, 32))
-        optimizer = optim.AdamW(model.parameters(), 0.001, betas=(0.9, 0.999), weight_decay=1e-2)
-        for epoch in range(100):
-            print("Training epoch:", epoch)
-            model.train_epoch(train_loader, args, epoch, optimizer, writer)
-            print("Evaluating epoch:", epoch)
-            model.eval_epoch(test_loader, args, writer)
+
+    optimizer = optim.AdamW(model.parameters(), 0.001, betas=(0.9, 0.999), weight_decay=1e-2)
+    lr_scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[50, 75], gamma=0.2)
+    for epoch in range(100):
+        print("Training epoch:", epoch)
+        model.train_epoch(train_loader, args, epoch, optimizer, writer)
+        print("Evaluating epoch:", epoch)
+        model.eval_epoch(test_loader, args, writer)
+        lr_scheduler.step()
+        if args.gossip:
             flattened = model.flatten()
             print("Pushing updates:", epoch)
             gossip.push_model(flattened)

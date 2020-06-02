@@ -35,7 +35,7 @@ class CifarCNN(torch.nn.Module):
             nn.ReLU(),
             nn.BatchNorm2d(32),
             nn.MaxPool2d(2),
-            nn.Dropout(0.3),
+            nn.Dropout(0.2),
 
             nn.Conv2d(32, 64, kernel_size=3, padding=1, stride=1),
             nn.ReLU(),
@@ -44,7 +44,7 @@ class CifarCNN(torch.nn.Module):
             nn.ReLU(),
             nn.BatchNorm2d(64),
             nn.MaxPool2d(2),
-            nn.Dropout(0.4),
+            nn.Dropout(0.3),
 
             nn.Conv2d(64, 128, kernel_size=3, padding=1, stride=1),
             nn.ReLU(),
@@ -53,7 +53,7 @@ class CifarCNN(torch.nn.Module):
             nn.ReLU(),
             nn.BatchNorm2d(128),
             nn.MaxPool2d(2),
-            nn.Dropout(0.5),
+            nn.Dropout(0.4),
 
             nn.Flatten(),
             nn.Linear(2048, 10),
