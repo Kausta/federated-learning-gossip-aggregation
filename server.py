@@ -16,10 +16,10 @@ def get_ip():
 if __name__ == '__main__':
     logging.basicConfig()
     me = get_ip() + ":50051"
-    print("Serving on", me)
+    logging.info("Serving on", me)
     with open('peers.txt') as p:
         peers = p.readlines()
     peers = [peer.strip() for peer in peers]
     peers = [peer for peer in peers if peer != me]
-    print("Peers:", ", ".join(peers))
+    logging.info("Peers:", ", ".join(peers))
     serve(port="50051", peers=peers, sync=True)

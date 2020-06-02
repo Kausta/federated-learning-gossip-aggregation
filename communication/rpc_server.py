@@ -21,6 +21,7 @@ class Server(communication_pb2_grpc.CommunicatorServicer):
     def SendModel(self, request, context):
         """Call RPC Server's SendModel to send the model to RPC Server
         """
+        logging.info("Received model")
         self.received_updates.put(request.data)
         return communication_pb2.Reply(result="Success")
 
@@ -29,6 +30,7 @@ class Server(communication_pb2_grpc.CommunicatorServicer):
         """
         if len(self.peers) > 0:
             peer = random.choice(self.peers)
+            logging.info("Sending to", peer.server_address)
             peer.send_model(request.data)
         # self.sending_updates.put(request.data)
         return communication_pb2.Reply(result="Success")
@@ -36,6 +38,7 @@ class Server(communication_pb2_grpc.CommunicatorServicer):
     def ReceiveUpdates(self, request, context):
         """Send update. TODO: change to streaming to process efficiently in the future
         """
+        logging.info("Draining updates")
         result = communication_pb2.Models()
         for model in _drain(self.received_updates):
             result.data.append(model)

@@ -8,7 +8,7 @@ from helper import AverageMeter
 def unflatten_block(block, index, weights, device):
     block_state_dict = block.state_dict()
     for key, value in block_state_dict.items():
-        param = value.detach().numpy()
+        param = value.cpu().detach().numpy()
         size = param.shape
         param = param.flatten()
         num_elements = len(param)
