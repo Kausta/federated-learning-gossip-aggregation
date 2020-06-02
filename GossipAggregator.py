@@ -1,6 +1,7 @@
 import abc
 import io
 import numpy as np
+from communication.rpc_client import RpcClient
 
 
 # Decay Rate = 0 => equivalent to original averaging algorithm, no alpha update
@@ -11,11 +12,14 @@ import numpy as np
 #  If peers available, choose 1 randomly and send
 #  If no peers available, buffer, do the above step for element in buffer when peers available
 
+
 class GossipAggregator:
     def __init__(self, data_points, decay_rate):
         self.alpha = 0
         self.alpha_update = float(data_points) / 10000
         self.decay_rate = decay_rate
+
+        self.rpc_client = RpcClient()
 
     def push_model(self, model):
         # Update alpha
@@ -52,7 +56,7 @@ class GossipAggregator:
         return model
 
     def _push_to_go(self, data):
-        pass
+        self.rpc_client.send_model(data)
 
     def _receive_from_go(self):
-        return []
+        return self.rpc_client.get_updates()

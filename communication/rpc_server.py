@@ -46,7 +46,8 @@ def serve():
     communication_pb2_grpc.add_CommunicatorServicer_to_server(Server(peers), server)
     server.add_insecure_port('[::]:{}'.format(port))
     server.start()
-    server.wait_for_termination()   # Comment this out for non-waiting start
+    server.wait_for_termination()  # Comment this out for non-waiting start
+
 
 def drain(q):
     while True:

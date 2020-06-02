@@ -8,7 +8,7 @@ import torchvision
 import torchvision.transforms as transforms
 from tensorboardX import SummaryWriter
 from torchsummary import summary
-
+import numpy as np
 from CifarCNN import CifarCNN
 from GossipAggregator import GossipAggregator
 
@@ -16,13 +16,15 @@ from GossipAggregator import GossipAggregator
 def main():
     parser = argparse.ArgumentParser(description="")
     parser.add_argument('--id', default="test", type=str)
-    parser.add_argument('--seed', default=None, type=int, help='seed for initializing training. ')
+    parser.add_argument('--seed', default=42, type=int, help='seed for initializing training. ')
     parser.add_argument('--gpu', default=None, type=int, help='GPU id to use.')
     parser.add_argument('--print_freq', '-p', default=10, type=int, metavar='N', help='print frequency (default: 10)')
-    parser.add_argument('--batch_size', type=int, default=256, help="Training data batch size")
+    parser.add_argument('--batch_size', type=int, default=128, help="Training data batch size")
     parser.add_argument('--data_dir', type=str, default="./data", help="Data directory")
-    parser.add_argument('--epochs', type=int, default=20, help="Number of epochs")
     args = parser.parse_args()
+
+    torch.manual_seed(args.seed)
+    np.random.seed(args.seed)
 
     batch_size_train = args.batch_size
     batch_size_test = args.batch_size
@@ -42,12 +44,12 @@ def main():
     train_set = torchvision.datasets.CIFAR10(
         root=args.data_dir, train=True, download=True, transform=transform_train)
     train_loader = torch.utils.data.DataLoader(
-        train_set, batch_size=batch_size_train, shuffle=True, num_workers=2)
+        train_set, batch_size=batch_size_train, shuffle=True, num_workers=1, pin_memory=True)
 
     test_set = torchvision.datasets.CIFAR10(
         root=args.data_dir, train=False, download=True, transform=transform_test)
     test_loader = torch.utils.data.DataLoader(
-        test_set, batch_size=batch_size_test, shuffle=False, num_workers=2)
+        test_set, batch_size=batch_size_test, shuffle=False, num_workers=0, pin_memory=True)
 
     run_dir = os.path.join("./", "runs", args.id)
     writer = SummaryWriter(log_dir=run_dir)
@@ -55,11 +57,8 @@ def main():
     model = CifarCNN()
     gossip = GossipAggregator(data_points=len(train_set), decay_rate=0.99)
     summary(model, (3, 32, 32))
-    epochs = args.epochs
-    optimizer = optim.Adam(
-        model.parameters(), 0.001, betas=(0.9, 0.999), weight_decay=1e-4)
-
-    for epoch in range(epochs):
+    optimizer = optim.Adam(model.parameters(), 0.001, betas=(0.9, 0.999), weight_decay=1e-4)
+    for epoch in range(100):
         print("Training epoch:", epoch)
         model.train_epoch(train_loader, args, epoch, optimizer, writer)
         print("Evaluating epoch:", epoch)

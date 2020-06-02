@@ -1,28 +1,22 @@
 import grpc
-import communication_pb2_grpc
-import communication_pb2
-
-SERVER_ADDRESS = 'localhost:50051'
-
-def send_model(data: bytes):
-    with grpc.insecure_channel(SERVER_ADDRESS) as channel:
-        stub = communication_pb2_grpc.CommunicatorStub(channel)
-        response = stub.SendModel(communication_pb2.Model(data=data))
-
-    return response
-
-def get_updates():
-    with grpc.insecure_channel(SERVER_ADDRESS) as channel:
-        stub = communication_pb2_grpc.CommunicatorStub(channel)
-        response = stub.ReceiveUpdates(communication_pb2.Reply())
-
-    print(response.data)
-    return response
+from . import communication_pb2_grpc
+from . import communication_pb2
 
 
-if __name__ == '__main__':
-    send_model(bytes(3))
-    send_model(bytes(1))
-    send_model(bytes(7))
-    send_model(bytes(9))
-    get_updates()
+class RpcClient:
+    def __init__(self, server_address='localhost:50051'):
+        self.server_address = server_address
+
+    def send_model(self, data: bytes):
+        with grpc.insecure_channel(self.server_address) as channel:
+            stub = communication_pb2_grpc.CommunicatorStub(channel)
+            response = stub.SendModel(communication_pb2.Model(data=data))
+
+        return response
+
+    def get_updates(self) -> [bytes]:
+        with grpc.insecure_channel(self.server_address) as channel:
+            stub = communication_pb2_grpc.CommunicatorStub(channel)
+            response = stub.ReceiveUpdates(communication_pb2.Reply())
+
+        return response.data
