@@ -61,8 +61,3 @@ def _drain(q):
             yield q.get_nowait()
         except Empty:
             break
-
-
-if __name__ == '__main__':
-    logging.basicConfig()
-    serve(sync=True)
