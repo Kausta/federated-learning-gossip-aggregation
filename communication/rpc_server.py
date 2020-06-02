@@ -1,16 +1,19 @@
 from concurrent import futures
 import logging
+import random
 
 import grpc
 
-import communication_pb2
-import communication_pb2_grpc
+from .rpc_client import RpcClient
+from . import communication_pb2
+from . import communication_pb2_grpc
 from queue import Queue, Empty
 
 
 class Server(communication_pb2_grpc.CommunicatorServicer):
     def __init__(self, peers):
-        self.peers = peers
+        self.peer_addrs = peers
+        self.peers = [RpcClient(addr) for addr in self.peer_addrs]
 
     received_updates = Queue()
     sending_updates = Queue()
@@ -25,8 +28,9 @@ class Server(communication_pb2_grpc.CommunicatorServicer):
         """Gets model from python and routes to a peer. Should queue if no peer exists
         """
         if len(self.peers) > 0:
-            print("HEY")
-        self.sending_updates.put(request.data)
+            peer = random.choice(self.peers)
+            peer.send_model(request.data)
+        # self.sending_updates.put(request.data)
         return communication_pb2.Reply(result="Success")
 
     def ReceiveUpdates(self, request, context):
@@ -48,7 +52,7 @@ def serve(port="50051", peers=None, sync=False):
     server.start()
 
     if sync:
-        server.wait_for_termination()   # Comment this out for non-waiting start
+        server.wait_for_termination()  # Comment this out for non-waiting start
 
 
 def _drain(q):
