@@ -5,7 +5,7 @@ import numpy as np
 from helper import AverageMeter
 
 
-def unflatten_block(block, index, weights):
+def unflatten_block(block, index, weights, device):
     block_state_dict = block.state_dict()
     for key, value in block_state_dict.items():
         param = value.detach().numpy()
@@ -15,14 +15,14 @@ def unflatten_block(block, index, weights):
         weight = weights[index:index + num_elements]
         index += num_elements
         np_arr = np.array(weight).reshape(size)
-        block_state_dict[key] = torch.tensor(np_arr)
+        block_state_dict[key] = torch.tensor(np_arr).to(device)
 
     block.load_state_dict(block_state_dict)
     return index
 
 
 class CifarCNN(torch.nn.Module):
-    def __init__(self):
+    def __init__(self, device):
         super(CifarCNN, self).__init__()
         self.layer = nn.Sequential(
             nn.Conv2d(3, 32, kernel_size=3, padding=1, stride=1),
@@ -58,7 +58,8 @@ class CifarCNN(torch.nn.Module):
             nn.Flatten(),
             nn.Linear(2048, 10),
             nn.LogSoftmax(dim=1)
-        )
+        ).to(device)
+        self.device = device
 
     def forward(self, X):
         loss = self.layer(X)
@@ -76,6 +77,9 @@ class CifarCNN(torch.nn.Module):
 
         for i, (x_batch, y_batch) in enumerate(loader):
             data_time.update(time.time() - end)
+
+            x_batch = x_batch.to(self.device)
+            y_batch = y_batch.to(self.device)
 
             prediction = self.forward(x_batch)
             loss = criterion(prediction, y_batch)
@@ -115,6 +119,9 @@ class CifarCNN(torch.nn.Module):
         with torch.no_grad():
             end = time.time()
             for i, (x_batch, y_batch) in enumerate(loader):
+                x_batch = x_batch.to(self.device)
+                y_batch = y_batch.to(self.device)
+
                 prediction = self.forward(x_batch)
 
                 loss = criterion(prediction, y_batch)
@@ -144,11 +151,11 @@ class CifarCNN(torch.nn.Module):
         all_params = np.array([])
 
         for key, value in self.layer.state_dict().items():
-            param = value.detach().numpy().flatten()
+            param = value.cpu().detach().numpy().flatten()
             all_params = np.append(all_params, param)
 
         return all_params
 
     def unflatten(self, weights):
         index = 0
-        index = unflatten_block(self.layer, index, weights)
+        index = unflatten_block(self.layer, index, weights, self.device)
