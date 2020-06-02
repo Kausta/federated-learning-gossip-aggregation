@@ -16,7 +16,7 @@ def get_updates():
         stub = communication_pb2_grpc.CommunicatorStub(channel)
         response = stub.ReceiveUpdates(communication_pb2.Reply())
 
-    print(response)
+    print(response.data)
     return response
 
 

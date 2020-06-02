@@ -32,8 +32,9 @@ class Server(communication_pb2_grpc.CommunicatorServicer):
     def ReceiveUpdates(self, request, context):
         """Send update. TODO: change to streaming to process efficiently in the future
         """
-        result = communication_pb2.Model()
+        result = communication_pb2.Models()
         for model in drain(self.received_updates):
+            result.data.append(model)
             print(model)
         return result
 
