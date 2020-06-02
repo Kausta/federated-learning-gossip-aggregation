@@ -33,23 +33,25 @@ class Server(communication_pb2_grpc.CommunicatorServicer):
         """Send update. TODO: change to streaming to process efficiently in the future
         """
         result = communication_pb2.Models()
-        for model in drain(self.received_updates):
+        for model in _drain(self.received_updates):
             result.data.append(model)
             print(model)
         return result
 
 
-def serve():
-    port = "50051"
-    peers = []
+def serve(port="50051", peers=None, sync=False):
+    if peers is None:
+        peers = []
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     communication_pb2_grpc.add_CommunicatorServicer_to_server(Server(peers), server)
     server.add_insecure_port('[::]:{}'.format(port))
     server.start()
-    server.wait_for_termination()  # Comment this out for non-waiting start
+
+    if sync:
+        server.wait_for_termination()   # Comment this out for non-waiting start
 
 
-def drain(q):
+def _drain(q):
     while True:
         try:
             yield q.get_nowait()
@@ -59,4 +61,4 @@ def drain(q):
 
 if __name__ == '__main__':
     logging.basicConfig()
-    serve()
+    serve(sync=True)
