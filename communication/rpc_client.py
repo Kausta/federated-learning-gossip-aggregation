@@ -19,12 +19,12 @@ class RpcClient:
 
     def update_model(self, data: bytes):
         stub = communication_pb2_grpc.CommunicatorStub(self.channel)
-        response = stub.SendModel(communication_pb2.Model(data=data))
+        response = stub.UpdateModel(communication_pb2.Model(data=data))
 
         return response
 
     def receive_updates(self) -> [bytes]:
         stub = communication_pb2_grpc.CommunicatorStub(self.channel)
-        response = stub.SendModel(communication_pb2.Model(data=data))
+        response = stub.ReceiveUpdates(communication_pb2.Reply(result="Success"))
 
         return response
