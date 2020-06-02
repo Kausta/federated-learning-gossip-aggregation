@@ -44,7 +44,7 @@ class GossipAggregator:
         # Process all model updates
         for elem in data:
             file = io.BytesIO()
-            file.write(elem)
+            file.write(elem.data)
             file.seek(0)
             content = np.load(file)
 
@@ -59,4 +59,4 @@ class GossipAggregator:
         self.rpc_client.update_model(data)
 
     def _receive_from_go(self):
-        return self.rpc_client.receive_updates().data
+        return self.rpc_client.receive_updates()

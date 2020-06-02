@@ -23,10 +23,10 @@ class CommunicatorStub(object):
                 request_serializer=communication__pb2.Model.SerializeToString,
                 response_deserializer=communication__pb2.Reply.FromString,
                 )
-        self.ReceiveUpdates = channel.unary_unary(
+        self.ReceiveUpdates = channel.unary_stream(
                 '/gossip.Communicator/ReceiveUpdates',
                 request_serializer=communication__pb2.Reply.SerializeToString,
-                response_deserializer=communication__pb2.Models.FromString,
+                response_deserializer=communication__pb2.Model.FromString,
                 )
 
 
@@ -67,10 +67,10 @@ def add_CommunicatorServicer_to_server(servicer, server):
                     request_deserializer=communication__pb2.Model.FromString,
                     response_serializer=communication__pb2.Reply.SerializeToString,
             ),
-            'ReceiveUpdates': grpc.unary_unary_rpc_method_handler(
+            'ReceiveUpdates': grpc.unary_stream_rpc_method_handler(
                     servicer.ReceiveUpdates,
                     request_deserializer=communication__pb2.Reply.FromString,
-                    response_serializer=communication__pb2.Models.SerializeToString,
+                    response_serializer=communication__pb2.Model.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -124,8 +124,8 @@ class Communicator(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/gossip.Communicator/ReceiveUpdates',
+        return grpc.experimental.unary_stream(request, target, '/gossip.Communicator/ReceiveUpdates',
             communication__pb2.Reply.SerializeToString,
-            communication__pb2.Models.FromString,
+            communication__pb2.Model.FromString,
             options, channel_credentials,
             call_credentials, compression, wait_for_ready, timeout, metadata)

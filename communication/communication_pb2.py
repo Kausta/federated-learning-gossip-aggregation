@@ -18,7 +18,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='gossip',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=b'\n\x13\x63ommunication.proto\x12\x06gossip\"\x15\n\x05Model\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\x0c\"\x16\n\x06Models\x12\x0c\n\x04\x64\x61ta\x18\x01 \x03(\x0c\"\x17\n\x05Reply\x12\x0e\n\x06result\x18\x01 \x01(\t2\x9d\x01\n\x0c\x43ommunicator\x12+\n\tSendModel\x12\r.gossip.Model\x1a\r.gossip.Reply\"\x00\x12-\n\x0bUpdateModel\x12\r.gossip.Model\x1a\r.gossip.Reply\"\x00\x12\x31\n\x0eReceiveUpdates\x12\r.gossip.Reply\x1a\x0e.gossip.Models\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\x13\x63ommunication.proto\x12\x06gossip\"\x15\n\x05Model\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\x0c\"\x16\n\x06Models\x12\x0c\n\x04\x64\x61ta\x18\x01 \x03(\x0c\"\x17\n\x05Reply\x12\x0e\n\x06result\x18\x01 \x01(\t2\x9e\x01\n\x0c\x43ommunicator\x12+\n\tSendModel\x12\r.gossip.Model\x1a\r.gossip.Reply\"\x00\x12-\n\x0bUpdateModel\x12\r.gossip.Model\x1a\r.gossip.Reply\"\x00\x12\x32\n\x0eReceiveUpdates\x12\r.gossip.Reply\x1a\r.gossip.Model\"\x00\x30\x01\x62\x06proto3'
 )
 
 
@@ -151,7 +151,7 @@ _COMMUNICATOR = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   serialized_start=104,
-  serialized_end=261,
+  serialized_end=262,
   methods=[
   _descriptor.MethodDescriptor(
     name='SendModel',
@@ -177,7 +177,7 @@ _COMMUNICATOR = _descriptor.ServiceDescriptor(
     index=2,
     containing_service=None,
     input_type=_REPLY,
-    output_type=_MODELS,
+    output_type=_MODEL,
     serialized_options=None,
   ),
 ])

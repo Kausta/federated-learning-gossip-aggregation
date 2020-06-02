@@ -1,6 +1,7 @@
 import argparse
 import os
 import random
+import time
 
 import torch
 import torch.nn as nn
@@ -95,8 +96,10 @@ def main():
         lr_scheduler.step()
         if args.gossip:
             flattened = model.flatten()
+            time.sleep(1)
             print("Pushing updates:", epoch)
             gossip.push_model(flattened)
+            time.sleep(1)
             print("Receiving updates:", epoch)
             flattened = gossip.receive_updates(flattened)
             model.unflatten(flattened)
