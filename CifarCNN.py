@@ -35,7 +35,7 @@ class CifarCNN(torch.nn.Module):
             nn.ReLU(),
             nn.BatchNorm2d(32),
             nn.MaxPool2d(2),
-            nn.Dropout(0.2),
+            nn.Dropout(0.3),
 
             nn.Conv2d(32, 64, kernel_size=3, padding=1, stride=1),
             nn.ReLU(),
@@ -44,7 +44,7 @@ class CifarCNN(torch.nn.Module):
             nn.ReLU(),
             nn.BatchNorm2d(64),
             nn.MaxPool2d(2),
-            nn.Dropout(0.3),
+            nn.Dropout(0.4),
 
             nn.Conv2d(64, 128, kernel_size=3, padding=1, stride=1),
             nn.ReLU(),
@@ -53,7 +53,7 @@ class CifarCNN(torch.nn.Module):
             nn.ReLU(),
             nn.BatchNorm2d(128),
             nn.MaxPool2d(2),
-            nn.Dropout(0.4),
+            nn.Dropout(0.5),
 
             nn.Flatten(),
             nn.Linear(2048, 10),
@@ -93,14 +93,14 @@ class CifarCNN(torch.nn.Module):
             batch_time.update(time.time() - end)
             end = time.time()
 
-            if i % args.print_freq == 0 or i == len(loader):
+            if i % args.print_freq == 0 or i == len(loader) - 1:
                 writer.add_scalar('train/loss', losses.val, step + i)
                 print(
                     'Epoch: [{0}][{1}/{2}]\t'
                     'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
                     'Data {data_time.val:.3f} ({data_time.avg:.3f})\t'
                     'Loss {loss.val:.4f} ({loss.avg:.4f})\t'.format(
-                        epoch, i, len(loader), batch_time=batch_time,
+                        epoch, i, len(loader) - 1, batch_time=batch_time,
                         data_time=data_time, loss=losses), flush=True)
 
     def eval_epoch(self, loader, args, writer):
@@ -137,13 +137,13 @@ class CifarCNN(torch.nn.Module):
                 batch_time.update(time.time() - end)
                 end = time.time()
 
-                if i % args.print_freq == 0 or i == len(loader):
+                if i % args.print_freq == 0 or i == len(loader) - 1:
                     writer.add_scalar('eval/loss', losses.val, step + i)
                     print(
                         'Test: [{0}/{1}]\t'
                         'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
                         'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
-                            .format(i, len(loader), batch_time=batch_time, loss=losses), flush=True)
+                            .format(i, len(loader) - 1, batch_time=batch_time, loss=losses), flush=True)
 
         print('Accuracy of the network on the test images: {accuracy:.4f}%'.format(accuracy=100 * correct / total))
 

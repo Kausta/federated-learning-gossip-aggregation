@@ -84,7 +84,7 @@ def main():
         model = CifarCNN(device)
         gossip = GossipAggregator(data_points=len(train_set), decay_rate=0.99)
         summary(model, (3, 32, 32))
-        optimizer = optim.AdamW(model.parameters(), 0.001, betas=(0.9, 0.999), weight_decay=1e-2, amsgrad=True)
+        optimizer = optim.AdamW(model.parameters(), 0.001, betas=(0.9, 0.999), weight_decay=1e-2)
         for epoch in range(100):
             print("Training epoch:", epoch)
             model.train_epoch(train_loader, args, epoch, optimizer, writer)
