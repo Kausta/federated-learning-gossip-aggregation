@@ -7,24 +7,22 @@ class RpcClient:
     def __init__(self, server_address='localhost:50051'):
         self.server_address = server_address
         self.channel = grpc.insecure_channel(self.server_address)
+        self.stub = communication_pb2_grpc.CommunicatorStub(self.channel)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.channel.close()
 
     def send_model(self, data: bytes):
-        stub = communication_pb2_grpc.CommunicatorStub(self.channel)
-        response = stub.SendModel(communication_pb2.Model(data=data))
+        response = self.stub.SendModel(communication_pb2.Model(data=data))
 
         return response
 
     def update_model(self, data: bytes):
-        stub = communication_pb2_grpc.CommunicatorStub(self.channel)
-        response = stub.UpdateModel(communication_pb2.Model(data=data))
+        response = self.stub.UpdateModel(communication_pb2.Model(data=data))
 
         return response
 
     def receive_updates(self) -> [bytes]:
-        stub = communication_pb2_grpc.CommunicatorStub(self.channel)
-        response = stub.ReceiveUpdates(communication_pb2.Reply(result="Success"))
+        response = self.stub.ReceiveUpdates(communication_pb2.Reply(result="Success"))
 
         return response

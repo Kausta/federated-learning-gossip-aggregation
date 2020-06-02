@@ -10,7 +10,7 @@ service Communicator {
   rpc UpdateModel (Model) returns (Reply){}
 
   // Send update. TODO: change to streaming to process efficiently in the future
-  rpc ReceiveUpdates (Reply) returns (Models) {}
+  rpc ReceiveUpdates (Reply) returns (stream Model) {}
 }
 
 message Model {
