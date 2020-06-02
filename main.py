@@ -1,5 +1,6 @@
 import argparse
 import os
+import random
 
 import torch
 import torch.nn as nn
@@ -14,6 +15,18 @@ from CifarCNN import CifarCNN
 from GossipAggregator import GossipAggregator
 
 
+def seed_everything(seed=42):
+    random.seed(seed)
+    os.environ['PYTHONHASHSEED'] = str(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.backends.cudnn.deterministic = True
+
+
+seed_everything()
+
+
 def main():
     print("Cuda:", torch.cuda.is_available())
     if torch.cuda.is_available():
@@ -25,16 +38,12 @@ def main():
 
     parser = argparse.ArgumentParser(description="")
     parser.add_argument('--id', default="test", type=str)
-    parser.add_argument('--seed', default=42, type=int, help='seed for initializing training. ')
     parser.add_argument('--print_freq', '-p', default=10, type=int, metavar='N', help='print frequency (default: 10)')
     parser.add_argument('--batch_size', type=int, default=128, help="Training data batch size")
     parser.add_argument('--data_dir', type=str, default="./data", help="Data directory")
     parser.add_argument("--gossip", type=bool, default=False, help="Gossip mode")
     parser.add_argument("--indices", type=str, default=None, help="Indices file")
     args = parser.parse_args()
-
-    torch.manual_seed(args.seed)
-    np.random.seed(args.seed)
 
     batch_size_train = args.batch_size
     batch_size_test = args.batch_size
