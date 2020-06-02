@@ -56,7 +56,7 @@ class GossipAggregator:
         return model
 
     def _push_to_go(self, data):
-        self.rpc_client.send_model(data)
+        self.rpc_client.update_model(data)
 
     def _receive_from_go(self):
-        return self.rpc_client.get_updates()
+        return self.rpc_client.receive_updates().data
