@@ -58,10 +58,10 @@ def main():
         indices = torch.load(args.indices)
     else:
         indices = list(range(len(train_set)))
-    sampler = torch.utils.data.SubsetRandomSampler(indices)
+    dataset = torch.utils.data.Subset(train_set, indices)
 
     train_loader = torch.utils.data.DataLoader(
-        train_set, batch_size=batch_size_train, shuffle=True, num_workers=1, pin_memory=True, sampler=sampler)
+        dataset, batch_size=batch_size_train, shuffle=True, num_workers=1, pin_memory=True)
 
     test_set = torchvision.datasets.CIFAR10(
         root=args.data_dir, train=False, download=True, transform=transform_test)
