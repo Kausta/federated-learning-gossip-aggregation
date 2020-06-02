@@ -36,7 +36,7 @@ class GossipAggregator:
         np.savez_compressed(file, model=model, alpha=self.alpha)
         data = file.getbuffer()
         # Send
-        self._push_to_go(data)
+        self._push_to_go(data.tobytes())
 
     def receive_updates(self, model):
         # Receive
