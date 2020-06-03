@@ -90,8 +90,8 @@ def main():
         gossip = None
 
     optimizer = optim.AdamW(model.parameters(), 0.001, betas=(0.9, 0.999), weight_decay=1e-2)
-    lr_scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[50, 75], gamma=0.2)
-    for epoch in range(100):
+    lr_scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[100, 150], gamma=0.1)
+    for epoch in range(200):
         print("Training epoch:", epoch)
         model.train_epoch(train_loader, args, epoch, optimizer, writer)
         print("Evaluating epoch:", epoch)
