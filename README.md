@@ -14,7 +14,7 @@ stdbuf -oL nohup python main.py --id train --batch_size 128 --print_freq 100 > .
 ```
  
 ```bash
-./run-gossip.sh <data-id>
+nohup ./run-gossip.sh <data-id>
 ```   
 ## License
 
