@@ -4,8 +4,8 @@ import numpy as np
 from communication.rpc_client import RpcClient
 
 
-# Decay Rate = 0 => equivalent to original averaging algorithm, no alpha update
-# Decay Rate = 1 => equivalent to always adding same alpha update
+# Decay Rate = 1 => equivalent to original averaging algorithm, no alpha update
+# Decay Rate = 0 => equivalent to always adding same alpha update
 # In between => added alpha update gets smaller by time
 
 # Assumed logic for go
@@ -21,12 +21,15 @@ class GossipAggregator:
 
         self.rpc_client = RpcClient()
 
+    def reset_update_rate(self, new_update_rate):
+        self.alpha_update = new_update_rate
+
     def push_model(self, model):
         # Update alpha
         prev_alpha = self.alpha
 
         self.alpha += self.alpha_update
-        self.alpha_update *= self.decay_rate
+        self.alpha_update *= (1 - self.decay_rate)
 
         print("Alpha:", prev_alpha, "->", self.alpha, "->", self.alpha / 2)
 
@@ -51,6 +54,8 @@ class GossipAggregator:
             model2, alpha2 = content['model'], content['alpha']
 
             total = self.alpha + alpha2
+            print("Alpha:", self.alpha, "->", total)
+
             model = (self.alpha * model + alpha2 * model2) / total
             self.alpha = total
         return model

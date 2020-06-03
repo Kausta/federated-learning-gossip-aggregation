@@ -44,6 +44,7 @@ def main():
     parser.add_argument('--data_dir', type=str, default="./data", help="Data directory")
     parser.add_argument("--gossip", type=bool, default=False, help="Gossip mode")
     parser.add_argument("--indices", type=str, default=None, help="Indices file")
+    parser.add_argument("--decay-rate", type=float, default=1.0, help="Decay Rate")
     args = parser.parse_args()
 
     batch_size_train = args.batch_size
@@ -84,7 +85,9 @@ def main():
     model = CifarCNN(device)
     summary(model, (3, 32, 32))
     if args.gossip:
-        gossip = GossipAggregator(data_points=len(train_set), decay_rate=0.99)
+        gossip = GossipAggregator(data_points=len(train_set), decay_rate=args.decay_rate)
+    else:
+        gossip = None
 
     optimizer = optim.AdamW(model.parameters(), 0.001, betas=(0.9, 0.999), weight_decay=1e-2)
     lr_scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[50, 75], gamma=0.2)
@@ -104,6 +107,20 @@ def main():
             flattened = gossip.receive_updates(flattened)
             model.unflatten(flattened)
             print("Evaluating post receive:", epoch)
+            model.eval_epoch(test_loader, args, writer)
+    if args.gossip:
+        # 20 additional transfers at the end for plotting, with no training
+        gossip.reset_update_rate(0)
+        for transfer in range(20):
+            flattened = model.flatten()
+            time.sleep(1)
+            print("Pushing updates at transfer:", transfer)
+            gossip.push_model(flattened)
+            time.sleep(1)
+            print("Receiving updates at transfer:", transfer)
+            flattened = gossip.receive_updates(flattened)
+            model.unflatten(flattened)
+            print("Evaluating post receive at transfer:", transfer)
             model.eval_epoch(test_loader, args, writer)
 
 
