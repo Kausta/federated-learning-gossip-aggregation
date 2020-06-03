@@ -99,10 +99,8 @@ def main():
         lr_scheduler.step()
         if args.gossip:
             flattened = model.flatten()
-            time.sleep(1)
             print("Pushing updates:", epoch)
             gossip.push_model(flattened)
-            time.sleep(1)
             print("Receiving updates:", epoch)
             flattened = gossip.receive_updates(flattened)
             model.unflatten(flattened)
@@ -111,12 +109,11 @@ def main():
     if args.gossip:
         # 20 additional transfers at the end for plotting, with no training
         gossip.reset_update_rate(0)
+        time.sleep(5)
         for transfer in range(20):
             flattened = model.flatten()
-            time.sleep(1)
             print("Pushing updates at transfer:", transfer)
             gossip.push_model(flattened)
-            time.sleep(1)
             print("Receiving updates at transfer:", transfer)
             flattened = gossip.receive_updates(flattened)
             model.unflatten(flattened)
