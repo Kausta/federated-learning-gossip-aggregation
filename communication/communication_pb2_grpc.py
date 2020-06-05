@@ -13,42 +13,18 @@ class CommunicatorStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.SendModel = channel.unary_unary(
-                '/gossip.Communicator/SendModel',
+        self.PushModel = channel.unary_unary(
+                '/gossip.Communicator/PushModel',
                 request_serializer=communication__pb2.Model.SerializeToString,
                 response_deserializer=communication__pb2.Reply.FromString,
-                )
-        self.UpdateModel = channel.unary_unary(
-                '/gossip.Communicator/UpdateModel',
-                request_serializer=communication__pb2.Model.SerializeToString,
-                response_deserializer=communication__pb2.Reply.FromString,
-                )
-        self.ReceiveUpdates = channel.unary_stream(
-                '/gossip.Communicator/ReceiveUpdates',
-                request_serializer=communication__pb2.Reply.SerializeToString,
-                response_deserializer=communication__pb2.Model.FromString,
                 )
 
 
 class CommunicatorServicer(object):
     """Missing associated documentation comment in .proto file"""
 
-    def SendModel(self, request, context):
+    def PushModel(self, request, context):
         """Call RPC Server's SendModel to send the model to RPC Server
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def UpdateModel(self, request, context):
-        """Gets model from python and routes to a peer. Should queue if no peer exists
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def ReceiveUpdates(self, request, context):
-        """Send update. TODO: change to streaming to process efficiently in the future
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -57,20 +33,10 @@ class CommunicatorServicer(object):
 
 def add_CommunicatorServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'SendModel': grpc.unary_unary_rpc_method_handler(
-                    servicer.SendModel,
+            'PushModel': grpc.unary_unary_rpc_method_handler(
+                    servicer.PushModel,
                     request_deserializer=communication__pb2.Model.FromString,
                     response_serializer=communication__pb2.Reply.SerializeToString,
-            ),
-            'UpdateModel': grpc.unary_unary_rpc_method_handler(
-                    servicer.UpdateModel,
-                    request_deserializer=communication__pb2.Model.FromString,
-                    response_serializer=communication__pb2.Reply.SerializeToString,
-            ),
-            'ReceiveUpdates': grpc.unary_stream_rpc_method_handler(
-                    servicer.ReceiveUpdates,
-                    request_deserializer=communication__pb2.Reply.FromString,
-                    response_serializer=communication__pb2.Model.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -83,7 +49,7 @@ class Communicator(object):
     """Missing associated documentation comment in .proto file"""
 
     @staticmethod
-    def SendModel(request,
+    def PushModel(request,
             target,
             options=(),
             channel_credentials=None,
@@ -92,40 +58,8 @@ class Communicator(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/gossip.Communicator/SendModel',
+        return grpc.experimental.unary_unary(request, target, '/gossip.Communicator/PushModel',
             communication__pb2.Model.SerializeToString,
             communication__pb2.Reply.FromString,
-            options, channel_credentials,
-            call_credentials, compression, wait_for_ready, timeout, metadata)
-
-    @staticmethod
-    def UpdateModel(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/gossip.Communicator/UpdateModel',
-            communication__pb2.Model.SerializeToString,
-            communication__pb2.Reply.FromString,
-            options, channel_credentials,
-            call_credentials, compression, wait_for_ready, timeout, metadata)
-
-    @staticmethod
-    def ReceiveUpdates(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_stream(request, target, '/gossip.Communicator/ReceiveUpdates',
-            communication__pb2.Reply.SerializeToString,
-            communication__pb2.Model.FromString,
             options, channel_credentials,
             call_credentials, compression, wait_for_ready, timeout, metadata)

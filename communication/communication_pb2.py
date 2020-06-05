@@ -18,7 +18,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='gossip',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=b'\n\x13\x63ommunication.proto\x12\x06gossip\"\x15\n\x05Model\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\x0c\"\x16\n\x06Models\x12\x0c\n\x04\x64\x61ta\x18\x01 \x03(\x0c\"\x17\n\x05Reply\x12\x0e\n\x06result\x18\x01 \x01(\t2\x9e\x01\n\x0c\x43ommunicator\x12+\n\tSendModel\x12\r.gossip.Model\x1a\r.gossip.Reply\"\x00\x12-\n\x0bUpdateModel\x12\r.gossip.Model\x1a\r.gossip.Reply\"\x00\x12\x32\n\x0eReceiveUpdates\x12\r.gossip.Reply\x1a\r.gossip.Model\"\x00\x30\x01\x62\x06proto3'
+  serialized_pb=b'\n\x13\x63ommunication.proto\x12\x06gossip\"\x15\n\x05Model\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\x0c\"\x17\n\x05Reply\x12\x0e\n\x06result\x18\x01 \x01(\x08\x32;\n\x0c\x43ommunicator\x12+\n\tPushModel\x12\r.gossip.Model\x1a\r.gossip.Reply\"\x00\x62\x06proto3'
 )
 
 
@@ -55,17 +55,17 @@ _MODEL = _descriptor.Descriptor(
 )
 
 
-_MODELS = _descriptor.Descriptor(
-  name='Models',
-  full_name='gossip.Models',
+_REPLY = _descriptor.Descriptor(
+  name='Reply',
+  full_name='gossip.Reply',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='data', full_name='gossip.Models.data', index=0,
-      number=1, type=12, cpp_type=9, label=3,
-      has_default_value=False, default_value=[],
+      name='result', full_name='gossip.Reply.result', index=0,
+      number=1, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
@@ -82,42 +82,10 @@ _MODELS = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=54,
-  serialized_end=76,
-)
-
-
-_REPLY = _descriptor.Descriptor(
-  name='Reply',
-  full_name='gossip.Reply',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='result', full_name='gossip.Reply.result', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=78,
-  serialized_end=101,
+  serialized_end=77,
 )
 
 DESCRIPTOR.message_types_by_name['Model'] = _MODEL
-DESCRIPTOR.message_types_by_name['Models'] = _MODELS
 DESCRIPTOR.message_types_by_name['Reply'] = _REPLY
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -127,13 +95,6 @@ Model = _reflection.GeneratedProtocolMessageType('Model', (_message.Message,), {
   # @@protoc_insertion_point(class_scope:gossip.Model)
   })
 _sym_db.RegisterMessage(Model)
-
-Models = _reflection.GeneratedProtocolMessageType('Models', (_message.Message,), {
-  'DESCRIPTOR' : _MODELS,
-  '__module__' : 'communication_pb2'
-  # @@protoc_insertion_point(class_scope:gossip.Models)
-  })
-_sym_db.RegisterMessage(Models)
 
 Reply = _reflection.GeneratedProtocolMessageType('Reply', (_message.Message,), {
   'DESCRIPTOR' : _REPLY,
@@ -150,34 +111,16 @@ _COMMUNICATOR = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=104,
-  serialized_end=262,
+  serialized_start=79,
+  serialized_end=138,
   methods=[
   _descriptor.MethodDescriptor(
-    name='SendModel',
-    full_name='gossip.Communicator.SendModel',
+    name='PushModel',
+    full_name='gossip.Communicator.PushModel',
     index=0,
     containing_service=None,
     input_type=_MODEL,
     output_type=_REPLY,
-    serialized_options=None,
-  ),
-  _descriptor.MethodDescriptor(
-    name='UpdateModel',
-    full_name='gossip.Communicator.UpdateModel',
-    index=1,
-    containing_service=None,
-    input_type=_MODEL,
-    output_type=_REPLY,
-    serialized_options=None,
-  ),
-  _descriptor.MethodDescriptor(
-    name='ReceiveUpdates',
-    full_name='gossip.Communicator.ReceiveUpdates',
-    index=2,
-    containing_service=None,
-    input_type=_REPLY,
-    output_type=_MODEL,
     serialized_options=None,
   ),
 ])

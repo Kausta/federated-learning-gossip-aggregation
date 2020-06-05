@@ -4,23 +4,13 @@ package gossip;
 
 service Communicator {
   // Call RPC Server's SendModel to send the model to RPC Server
-  rpc SendModel (Model) returns (Reply) {}
-
-  // Gets model from python and routes to a peer. Should queue if no peer exists
-  rpc UpdateModel (Model) returns (Reply){}
-
-  // Send update. TODO: change to streaming to process efficiently in the future
-  rpc ReceiveUpdates (Reply) returns (stream Model) {}
+  rpc PushModel (Model) returns (Reply) {}
 }
 
 message Model {
   bytes data = 1;
 }
 
-message Models {
-  repeated bytes data = 1;
-}
-
 message Reply {
-  string result = 1;
+  bool result = 1;
 }

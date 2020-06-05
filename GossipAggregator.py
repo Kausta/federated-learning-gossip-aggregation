@@ -1,25 +1,21 @@
 import abc
 import io
 import numpy as np
-from communication.rpc_client import RpcClient
+from communication.rpc_server import ServerAPI
 
 
 # Decay Rate = 1 => equivalent to original averaging algorithm, no alpha update
 # Decay Rate = 0 => equivalent to always adding same alpha update
 # In between => added alpha update gets smaller by time
 
-# Assumed logic for go
-#  If peers available, choose 1 randomly and send
-#  If no peers available, buffer, do the above step for element in buffer when peers available
-
 
 class GossipAggregator:
-    def __init__(self, data_points, decay_rate):
+    def __init__(self, data_points, decay_rate, server_api: ServerAPI):
         self.alpha = 0
         self.alpha_update = float(data_points) / 10000
         self.decay_rate = decay_rate
 
-        self.rpc_client = RpcClient()
+        self.client = server_api
 
     def reset_update_rate(self, new_update_rate):
         self.alpha_update = new_update_rate
@@ -39,15 +35,16 @@ class GossipAggregator:
         np.savez_compressed(file, model=model, alpha=self.alpha)
         data = file.getbuffer()
         # Send
-        self._push_to_go(data.tobytes())
+        res = self.client.push_model(data.tobytes())
+        if not res:
+            self.alpha *= 2
+            print("Failed transmission, restoring alpha to", self.alpha)
 
     def receive_updates(self, model):
-        # Receive
-        data = self._receive_from_go()
         # Process all model updates
-        for elem in data:
+        for elem in self.client.get_updates():
             file = io.BytesIO()
-            file.write(elem.data)
+            file.write(elem)
             file.seek(0)
             content = np.load(file)
 
@@ -59,9 +56,3 @@ class GossipAggregator:
             model = (self.alpha * model + alpha2 * model2) / total
             self.alpha = total
         return model
-
-    def _push_to_go(self, data):
-        self.rpc_client.update_model(data)
-
-    def _receive_from_go(self):
-        return self.rpc_client.receive_updates()

@@ -14,6 +14,7 @@ from torchsummary import summary
 import numpy as np
 from CifarCNN import CifarCNN
 from GossipAggregator import GossipAggregator
+from communication.rpc_server import server_from_peers_file
 
 
 def seed_everything(seed=42):
@@ -45,7 +46,13 @@ def main():
     parser.add_argument("--gossip", type=bool, default=False, help="Gossip mode")
     parser.add_argument("--indices", type=str, default=None, help="Indices file")
     parser.add_argument("--decay-rate", type=float, default=1.0, help="Decay Rate")
+    parser.add_argument("--peers", type=str, default="peers.txt", help="Peers file")
     args = parser.parse_args()
+
+    api = None
+    if args.gossip:
+        peers = args.peers
+        api = server_from_peers_file(peers)
 
     batch_size_train = args.batch_size
     batch_size_test = args.batch_size
@@ -84,10 +91,9 @@ def main():
 
     model = CifarCNN(device)
     summary(model, (3, 32, 32))
+    gossip = None
     if args.gossip:
-        gossip = GossipAggregator(data_points=len(train_set), decay_rate=args.decay_rate)
-    else:
-        gossip = None
+        gossip = GossipAggregator(data_points=len(train_set), decay_rate=args.decay_rate, server_api=api)
 
     optimizer = optim.AdamW(model.parameters(), 0.001, betas=(0.9, 0.999), weight_decay=1e-2)
     lr_scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[100, 150], gamma=0.1)
@@ -119,6 +125,7 @@ def main():
             model.unflatten(flattened)
             print("Evaluating post receive at transfer:", transfer)
             model.eval_epoch(test_loader, args, writer)
+    time.sleep(120)
 
 
 if __name__ == '__main__':

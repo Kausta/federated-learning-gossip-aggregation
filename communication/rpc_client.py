@@ -1,3 +1,5 @@
+import logging
+
 import grpc
 from . import communication_pb2_grpc
 from . import communication_pb2
@@ -13,16 +15,9 @@ class RpcClient:
         self.channel.close()
 
     def send_model(self, data: bytes):
-        response = self.stub.SendModel(communication_pb2.Model(data=data))
-
-        return response
-
-    def update_model(self, data: bytes):
-        response = self.stub.UpdateModel(communication_pb2.Model(data=data))
-
-        return response
-
-    def receive_updates(self) -> [bytes]:
-        response = self.stub.ReceiveUpdates(communication_pb2.Reply(result="Success"))
-
-        return response
+        try:
+            response = self.stub.PushModel(communication_pb2.Model(data=data))
+            return response.result
+        except grpc.RpcError as e:
+            logging.error(e)
+            return False

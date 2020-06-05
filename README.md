@@ -8,9 +8,10 @@
     - torchvision
     - tensorboardX
     - torchsummary
+    - grpcio
     
 ```bash
-stdbuf -oL nohup python main.py --id train --batch_size 128 --print_freq 100 > ../out-classical.txt 2>&1 &
+PYTHONUNBUFFERED=1 nohup python main.py --id train --batch_size 128 --print_freq 100 &>../out200-classical.txt &
 ```
  
 ```bash
