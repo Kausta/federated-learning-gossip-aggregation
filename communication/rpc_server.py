@@ -64,7 +64,7 @@ def get_ip():
 
 
 def read_peers(file_name, me):
-    with open('peers.txt') as p:
+    with open(file_name) as p:
         peers = p.readlines()
     peers = [peer.strip() for peer in peers]
     peers = [peer for peer in peers if peer != me]
