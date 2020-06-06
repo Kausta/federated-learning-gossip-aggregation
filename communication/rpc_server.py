@@ -15,8 +15,8 @@ class Server(communication_pb2_grpc.CommunicatorServicer):
     def __init__(self, update_queue):
         self.received_updates = update_queue
 
-    def SendModel(self, request, context):
-        """Call RPC Server's SendModel to send the model to RPC Server
+    def PushModel(self, request, context):
+        """
         """
         print("Received model")
         self.received_updates.put(request.data)
