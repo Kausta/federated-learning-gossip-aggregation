@@ -12,11 +12,15 @@ from queue import Queue, Empty
 
 
 class Server(communication_pb2_grpc.CommunicatorServicer):
+    """
+    GRPC server.
+    """
     def __init__(self, update_queue):
         self.received_updates = update_queue
 
     def PushModel(self, request, context):
         """
+        Called by other peers to add model to received update queue. The received request is Model protobuf object
         """
         print("Received model")
         self.received_updates.put(request.data)
@@ -30,7 +34,12 @@ class ServerAPI:
         self.received_updates = update_queue
         self.server = server
 
-    def push_model(self, data):
+    def push_model(self, data) -> bool:
+        """
+        If a peer exists, send to a peer, else return false
+        :param data: Model update
+        :return: Success bool
+        """
         if len(self.peers) > 0:
             peer = random.choice(self.peers)
             print("Sending to", peer.server_address)
@@ -38,6 +47,10 @@ class ServerAPI:
         return False
 
     def get_updates(self):
+        """
+        Returns received updates in the queue
+        :return:
+        """
         print("Draining updates")
         for model in _drain(self.received_updates):
             yield model

@@ -7,6 +7,10 @@ from . import communication_pb2
 
 class RpcClient:
     def __init__(self, server_address='localhost:50051'):
+        """
+        Initializes grpc communication channel and stub
+        :param server_address:
+        """
         self.server_address = server_address
         self.channel = grpc.insecure_channel(self.server_address)
         self.stub = communication_pb2_grpc.CommunicatorStub(self.channel)
@@ -15,6 +19,11 @@ class RpcClient:
         self.channel.close()
 
     def send_model(self, data: bytes):
+        """
+        Sends model to the grpc server we initialized this client with.
+        :param data:
+        :return:
+        """
         try:
             response = self.stub.PushModel(communication_pb2.Model(data=data))
             return response.result
