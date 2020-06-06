@@ -4,30 +4,15 @@ import numpy as np
 from communication.rpc_server import ServerAPI
 
 
-# Decay Rate = 1 => equivalent to original averaging algorithm, no alpha update
-# Decay Rate = 0 => equivalent to always adding same alpha update
-# In between => added alpha update gets smaller by time
-
-
 class GossipAggregator:
-    def __init__(self, data_points, decay_rate, server_api: ServerAPI):
-        self.alpha = 0
-        self.alpha_update = float(data_points) / 10000
-        self.decay_rate = decay_rate
+    def __init__(self, data_points, server_api: ServerAPI):
+        self.alpha = float(data_points) / 10000
 
         self.client = server_api
 
-    def reset_update_rate(self, new_update_rate):
-        self.alpha_update = new_update_rate
-
     def push_model(self, model):
         # Update alpha
-        prev_alpha = self.alpha
-
-        self.alpha += self.alpha_update
-        self.alpha_update *= (1 - self.decay_rate)
-
-        print("Alpha:", prev_alpha, "->", self.alpha, "->", self.alpha / 2)
+        print("Alpha:", self.alpha, "->", self.alpha / 2)
 
         self.alpha /= 2
         # Compress to byte array
