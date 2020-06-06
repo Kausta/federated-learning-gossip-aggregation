@@ -18,7 +18,7 @@ class Server(communication_pb2_grpc.CommunicatorServicer):
     def SendModel(self, request, context):
         """Call RPC Server's SendModel to send the model to RPC Server
         """
-        logging.info("Received model")
+        print("Received model")
         self.received_updates.put(request.data)
         return communication_pb2.Reply(result=True)
 
@@ -32,12 +32,12 @@ class ServerAPI:
     def push_model(self, data):
         if len(self.peers) > 0:
             peer = random.choice(self.peers)
-            logging.info("Sending to", peer.server_address)
+            print("Sending to", peer.server_address)
             return peer.send_model(data)
         return False
 
     def get_updates(self):
-        logging.info("Draining updates")
+        print("Draining updates")
         for model in _drain(self.received_updates):
             yield model
 
@@ -72,11 +72,10 @@ def read_peers(file_name, me):
 
 
 def server_from_peers_file(file_name):
-    logging.basicConfig()
     me = get_ip() + ":50051"
-    logging.info("Serving on", me)
+    print("Serving on", me)
     peers = read_peers(file_name, me)
-    logging.info("Peers:", ", ".join(peers))
+    print("Peers:", ", ".join(peers))
     return serve(port="50051", peers=peers)
 
 
