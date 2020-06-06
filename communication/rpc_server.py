@@ -24,10 +24,11 @@ class Server(communication_pb2_grpc.CommunicatorServicer):
 
 
 class ServerAPI:
-    def __init__(self, peers, update_queue):
+    def __init__(self, peers, update_queue, server):
         self.peer_addrs = peers
         self.peers = [RpcClient(addr) for addr in self.peer_addrs]
         self.received_updates = update_queue
+        self.server = server
 
     def push_model(self, data):
         if len(self.peers) > 0:
@@ -47,7 +48,7 @@ def serve(port="50051", peers=None):
         peers = []
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     queue = Queue()
-    server_api = ServerAPI(peers, queue)
+    server_api = ServerAPI(peers, queue, server)
     communication_pb2_grpc.add_CommunicatorServicer_to_server(Server(queue), server)
     server.add_insecure_port('[::]:{}'.format(port))
     server.start()
