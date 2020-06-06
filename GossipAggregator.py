@@ -11,6 +11,12 @@ class GossipAggregator:
         self.client = server_api
 
     def push_model(self, model):
+        """
+        Updates the alpha and sends the model to a peer. Will restore the original alpha
+        if the transmission of update fails for some reason.
+        :param model:
+        :return:
+        """
         # Update alpha
         print("Alpha:", self.alpha, "->", self.alpha / 2)
 
@@ -26,8 +32,13 @@ class GossipAggregator:
             print("Failed transmission, restoring alpha to", self.alpha)
 
     def receive_updates(self, model):
-        # Process all model updates
+        """
+        Processes all received updates
+        :param model:
+        :return:
+        """
         for elem in self.client.get_updates():
+            # Write the bytes into memory for numpy to load from.
             file = io.BytesIO()
             file.write(elem)
             file.seek(0)
