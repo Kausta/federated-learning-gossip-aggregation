@@ -3,14 +3,16 @@ syntax = "proto3";
 package gossip;
 
 service Communicator {
-  // Call RPC Server's SendModel to send the model to RPC Server
+  // Pushes update(model) to the updates queue
   rpc PushModel (Model) returns (Reply) {}
 }
 
 message Model {
+  // Model data is communicated as bytes(byte array)
   bytes data = 1;
 }
 
 message Reply {
+  // Success or failure is sent as a boolean for easy evaluations
   bool result = 1;
 }
