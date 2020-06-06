@@ -111,19 +111,6 @@ def main():
             model.unflatten(flattened)
             print("Evaluating post receive:", epoch)
             model.eval_epoch(test_loader, args, writer)
-    if args.gossip:
-        # 20 additional transfers at the end for plotting, with no training
-        time.sleep(5)
-        for transfer in range(20):
-            flattened = model.flatten()
-            print("Pushing updates at transfer:", transfer)
-            gossip.push_model(flattened)
-            print("Receiving updates at transfer:", transfer)
-            flattened = gossip.receive_updates(flattened)
-            model.unflatten(flattened)
-            print("Evaluating post receive at transfer:", transfer)
-            model.eval_epoch(test_loader, args, writer)
-    time.sleep(120)
 
 
 if __name__ == '__main__':
