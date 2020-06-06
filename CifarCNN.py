@@ -6,6 +6,9 @@ from helper import AverageMeter
 
 
 def unflatten_block(block, index, weights, device):
+    """
+    Unflatten the given block into the model at specified index and transfer to the device
+    """
     block_state_dict = block.state_dict()
     for key, value in block_state_dict.items():
         param = value.cpu().detach().numpy()
@@ -23,6 +26,9 @@ def unflatten_block(block, index, weights, device):
 
 class CifarCNN(torch.nn.Module):
     def __init__(self, device):
+        """
+        Initialize the deep learning model on the given device
+        """
         super(CifarCNN, self).__init__()
         self.layer = nn.Sequential(
             nn.Conv2d(3, 32, kernel_size=3, padding=1, stride=1),
@@ -62,10 +68,16 @@ class CifarCNN(torch.nn.Module):
         self.device = device
 
     def forward(self, X):
+        """
+        Calculate loss using the model
+        """
         loss = self.layer(X)
         return loss
 
     def train_epoch(self, loader, args, epoch, optimizer, writer):
+        """
+        Train for a single epoch
+        """
         batch_time = AverageMeter()
         data_time = AverageMeter()
         losses = AverageMeter()
@@ -104,6 +116,9 @@ class CifarCNN(torch.nn.Module):
                         data_time=data_time, loss=losses), flush=True)
 
     def eval_epoch(self, loader, args, writer):
+        """
+        Test the model using the given data loader
+        """
         batch_time = AverageMeter()
         losses = AverageMeter()
 
@@ -148,6 +163,9 @@ class CifarCNN(torch.nn.Module):
         print('Accuracy of the network on the test images: {accuracy:.4f}%'.format(accuracy=100 * correct / total))
 
     def flatten(self):
+        """
+        Flatten the model into a linear array on CPU
+        """
         all_params = np.array([])
 
         for key, value in self.layer.state_dict().items():
@@ -157,5 +175,10 @@ class CifarCNN(torch.nn.Module):
         return all_params
 
     def unflatten(self, weights):
+        """
+        Load the weights from a linear array on CPU to the actual model on the device
+        :param weights:
+        :return:
+        """
         index = 0
         index = unflatten_block(self.layer, index, weights, self.device)

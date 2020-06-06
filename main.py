@@ -30,6 +30,9 @@ seed_everything()
 
 
 def main():
+    """
+    Main entry point to the system
+    """
     print("Cuda:", torch.cuda.is_available())
     if torch.cuda.is_available():
         dev = "cuda:0"
@@ -38,6 +41,7 @@ def main():
     print("Using device", dev)
     device = torch.device(dev)
 
+    # Handle parsing command line arguments
     parser = argparse.ArgumentParser(description="")
     parser.add_argument('--id', default="test", type=str)
     parser.add_argument('--print_freq', '-p', default=10, type=int, metavar='N', help='print frequency (default: 10)')
@@ -54,6 +58,7 @@ def main():
         peers = args.peers
         api = server_from_peers_file(peers)
 
+    # Load the training and test data
     batch_size_train = args.batch_size
     batch_size_test = args.batch_size
 
@@ -89,6 +94,7 @@ def main():
     run_dir = os.path.join("./", "runs", args.id)
     writer = SummaryWriter(log_dir=run_dir)
 
+    # The training process
     model = CifarCNN(device)
     summary(model, (3, 32, 32))
     gossip = None
@@ -104,6 +110,7 @@ def main():
         model.eval_epoch(test_loader, args, writer)
         lr_scheduler.step()
         if args.gossip:
+            # Handle the gossip learning updates
             flattened = model.flatten()
             print("Pushing updates:", epoch)
             gossip.push_model(flattened)

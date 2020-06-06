@@ -14,8 +14,6 @@ class GossipAggregator:
         """
         Updates the alpha and sends the model to a peer. Will restore the original alpha
         if the transmission of update fails for some reason.
-        :param model:
-        :return:
         """
         # Update alpha
         print("Alpha:", self.alpha, "->", self.alpha / 2)
@@ -34,8 +32,6 @@ class GossipAggregator:
     def receive_updates(self, model):
         """
         Processes all received updates
-        :param model:
-        :return:
         """
         for elem in self.client.get_updates():
             # Write the bytes into memory for numpy to load from.
