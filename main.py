@@ -48,6 +48,7 @@ def main():
     parser.add_argument("--peers", type=str, default="peers.txt", help="Peers file")
     args = parser.parse_args()
 
+    # Create GRPC API
     api = None
     if args.gossip:
         peers = args.peers
